@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام إدارة شؤون الموظفين - أكاديمية زويل</title>
+  <!-- Bootstrap RTL CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <img src="img/logo.svg" alt="أكاديمية زويل" width="40" height="40" class="d-inline-block align-text-top me-2">
+        نظام إدارة شؤون الموظفين
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" href="#"><i class="fas fa-home"></i> الرئيسية</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="employees-link"><i class="fas fa-users"></i> الموظفين</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="reports-link"><i class="fas fa-file-alt"></i> التقارير</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="messages-link"><i class="fas fa-envelope"></i> المراسلات</a>
+          </li>
+        </ul>
+        <div class="d-flex">
+          <div class="dropdown">
+            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+              <i class="fas fa-user"></i> <span id="username">المستخدم</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog"></i> الإعدادات</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Login Form -->
+  <div class="container mt-5" id="login-container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow">
+          <div class="card-body p-5">
+            <div class="text-center mb-4">
+              <img src="img/logo.svg" alt="أكاديمية زويل" width="80" height="80">
+              <h2 class="mt-3">تسجيل الدخول</h2>
+              <p class="text-muted">نظام إدارة شؤون الموظفين</p>
+            </div>
+            <form id="login-form">
+              <div class="mb-3">
+                <label for="username" class="form-label">اسم المستخدم</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-user"></i></span>
+                  <input type="text" class="form-control" id="login-username" required>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">كلمة المرور</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                  <input type="password" class="form-control" id="login-password" required>
+                </div>
+              </div>
+              <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">تسجيل الدخول</button>
+              </div>
+              <div class="alert alert-danger mt-3 d-none" id="login-error"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container mt-4 d-none" id="main-container">
+    <!-- Dashboard -->
+    <div id="dashboard-section">
+      <h2 class="mb-4">لوحة التحكم</h2>
+      <div class="row">
+        <!-- Stats Cards -->
+        <div class="col-md-3 mb-4">
+          <div class="card bg-primary text-white h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="card-title">إجمالي الموظفين</h5>
+                  <h2 class="display-4" id="total-employees">0</h2>
+                </div>
+                <i class="fas fa-users fa-3x opacity-50"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="card bg-success text-white h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="card-title">الموظفين النشطين</h5>
+                  <h2 class="display-4" id="active-employees">0</h2>
+                </div>
+                <i class="fas fa-user-check fa-3x opacity-50"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="card bg-warning text-dark h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="card-title">في إجازة</h5>
+                  <h2 class="display-4" id="on-leave-employees">0</h2>
+                </div>
+                <i class="fas fa-user-clock fa-3x opacity-50"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="card bg-danger text-white h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="card-title">متوقفين</h5>
+                  <h2 class="display-4" id="inactive-employees">0</h2>
+                </div>
+                <i class="fas fa-user-slash fa-3x opacity-50"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="row mt-4">
+        <div class="col-md-6 mb-4">
+          <div class="card h-100">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0">توزيع الموظفين حسب الوظيفة</h5>
+            </div>
+            <div class="card-body">
+              <canvas id="job-distribution-chart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card h-100">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0">متوسط الرواتب</h5>
+            </div>
+            <div class="card-body">
+              <canvas id="salary-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Employees -->
+      <div class="card mt-4">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">أحدث الموظفين</h5>
+          <button class="btn btn-primary btn-sm" id="view-all-employees">عرض الكل</button>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>الاسم</th>
+                  <th>الوظيفة</th>
+                  <th>تاريخ التوظيف</th>
+                  <th>الراتب</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody id="recent-employees-table">
+                <!-- سيتم ملء هذا الجدول بالبيانات من JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Employees Section -->
+    <div id="employees-section" class="d-none">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>إدارة الموظفين</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+          <i class="fas fa-plus"></i> إضافة موظف جديد
+        </button>
+      </div>
+
+      <!-- Search and Filter -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" class="form-control" id="employee-search" placeholder="بحث عن موظف...">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <select class="form-select" id="status-filter">
+                <option value="">جميع الحالات</option>
+                <option value="نشط">نشط</option>
+                <option value="متوقف">متوقف</option>
+                <option value="في إجازة">في إجازة</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <select class="form-select" id="job-filter">
+                <option value="">جميع الوظائف</option>
+                <!-- سيتم ملء هذه القائمة بالبيانات من JavaScript -->
+              </select>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-outline-secondary w-100" id="reset-filters">
+                <i class="fas fa-redo"></i> إعادة تعيين
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employees Table -->
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>الاسم</th>
+                  <th>الرقم القومي</th>
+                  <th>الوظيفة</th>
+                  <th>تاريخ التوظيف</th>
+                  <th>الراتب</th>
+                  <th>الحالة</th>
+                  <th>الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="employees-table">
+                <!-- سيتم ملء هذا الجدول بالبيانات من JavaScript -->
+              </tbody>
+            </table>
+          </div>
+          <div class="text-center p-3 d-none" id="no-employees-message">
+            <p class="text-muted">لا يوجد موظفين متطابقين مع معايير البحث</p>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+              <span id="employees-count">0</span> موظف
+            </div>
+            <nav>
+              <ul class="pagination" id="employees-pagination">
+                <!-- سيتم إنشاء أزرار الصفحات بواسطة JavaScript -->
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reports Section -->
+    <div id="reports-section" class="d-none">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>التقارير</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addReportModal">
+          <i class="fas fa-plus"></i> إنشاء تقرير جديد
+        </button>
+      </div>
+
+      <!-- Reports Table -->
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>اسم الموظف</th>
+                  <th>نوع التقرير</th>
+                  <th>تاريخ الإرسال</th>
+                  <th>الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="reports-table">
+                <!-- سيتم ملء هذا الجدول بالبيانات من JavaScript -->
+              </tbody>
+            </table>
+          </div>
+          <div class="text-center p-3 d-none" id="no-reports-message">
+            <p class="text-muted">لا يوجد تقارير</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages Section -->
+    <div id="messages-section" class="d-none">
+      <h2 class="mb-4">المراسلات</h2>
+
+      <ul class="nav nav-tabs mb-4" id="messagesTabs">
+        <li class="nav-item">
+          <a class="nav-link active" id="email-tab" data-bs-toggle="tab" href="#email-panel">البريد الإلكتروني</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="whatsapp-tab" data-bs-toggle="tab" href="#whatsapp-panel">واتساب</a>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <!-- Email Panel -->
+        <div class="tab-pane fade show active" id="email-panel">
+          <div class="card">
+            <div class="card-body">
+              <form id="email-form">
+                <div class="mb-3">
+                  <label for="email-employee" class="form-label">الموظف</label>
+                  <select class="form-select" id="email-employee" required>
+                    <option value="">اختر الموظف</option>
+                    <!-- سيتم ملء هذه القائمة بالبيانات من JavaScript -->
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="email-subject" class="form-label">الموضوع</label>
+                  <input type="text" class="form-control" id="email-subject" required>
+                </div>
+                <div class="mb-3">
+                  <label for="email-message" class="form-label">الرسالة</label>
+                  <textarea class="form-control" id="email-message" rows="6" required></textarea>
+                </div>
+                <div class="d-grid gap-2">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> إرسال البريد الإلكتروني
+                  </button>
+                </div>
+                <div class="alert alert-success mt-3 d-none" id="email-success"></div>
+                <div class="alert alert-danger mt-3 d-none" id="email-error"></div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- WhatsApp Panel -->
+        <div class="tab-pane fade" id="whatsapp-panel">
+          <div class="card">
+            <div class="card-body">
+              <form id="whatsapp-form">
+                <div class="mb-3">
+                  <label for="whatsapp-employee" class="form-label">الموظف</label>
+                  <select class="form-select" id="whatsapp-employee" required>
+                    <option value="">اختر الموظف</option>
+                    <!-- سيتم ملء هذه القائمة بالبيانات من JavaScript -->
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="whatsapp-message" class="form-label">الرسالة</label>
+                  <textarea class="form-control" id="whatsapp-message" rows="6" required></textarea>
+                </div>
+                <div class="d-grid gap-2">
+                  <button type="submit" class="btn btn-success">
+                    <i class="fab fa-whatsapp"></i> إرسال رسالة واتساب
+                  </button>
+                </div>
+                <div class="alert alert-success mt-3 d-none" id="whatsapp-success"></div>
+                <div class="alert alert-danger mt-3 d-none" id="whatsapp-error"></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Employee Modal -->
+  <div class="modal fade" id="addEmployeeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">إضافة موظف جديد</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="add-employee-form">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="employee-name" class="form-label">الاسم</label>
+                <input type="text" class="form-control" id="employee-name" required>
+              </div>
+              <div class="col-md-6">
+                <label for="employee-national-id" class="form-label">الرقم القومي</label>
+                <input type="text" class="form-control" id="employee-national-id" required>
+              </div>
+              <div class="col-md-6">
+                <label for="employee-job" class="form-label">الوظيفة</label>
+                <input type="text" class="form-control" id="employee-job" required>
+              </div>
+              <div class="col-md-6">
+                <label for="employee-salary" class="form-label">الراتب (جنيه مصري)</label>
+                <input type="number" class="form-control" id="employee-salary" required>
+              </div>
+              <div class="col-md-6">
+                <label for="employee-hire-date" class="form-label">تاريخ التوظيف</label>
+                <input type="date" class="form-control" id="employee-hire-date" required>
+              </div>
+              <div class="col-md-6">
+                <label for="employee-status" class="form-label">الحالة</label>
+                <select class="form-select" id="employee-status" required>
+                  <option value="نشط">نشط</option>
+                  <option value="متوقف">متوقف</option>
+                  <option value="في إجازة">في إجازة</option>
+                </select>
+              </div>
+            </div>
+            <div class="alert alert-danger mt-3 d-none" id="add-employee-error"></div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+          <button type="button" class="btn btn-primary" id="save-employee-btn">حفظ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Employee Modal -->
+  <div class="modal fade" id="editEmployeeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">تعديل بيانات الموظف</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="edit-employee-form">
+            <input type="hidden" id="edit-employee-id">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="edit-employee-name" class="form-label">الاسم</label>
+                <input type="text" class="form-control" id="edit-employee-name" required>
+              </div>
+              <div class="col-md-6">
+                <label for="edit-employee-national-id" class="form-label">الرقم القومي</label>
+                <input type="text" class="form-control" id="edit-employee-national-id" required>
+              </div>
+              <div class="col-md-6">
+                <label for="edit-employee-job" class="form-label">الوظيفة</label>
+                <input type="text" class="form-control" id="edit-employee-job" required>
+              </div>
+              <div class="col-md-6">
+                <label for="edit-employee-salary" class="form-label">الراتب (جنيه مصري)</label>
+                <input type="number" class="form-control" id="edit-employee-salary" required>
+              </div>
+              <div class="col-md-6">
+                <label for="edit-employee-hire-date" class="form-label">تاريخ التوظيف</label>
+                <input type="date" class="form-control" id="edit-employee-hire-date" required>
+              </div>
+              <div class="col-md-6">
+                <label for="edit-employee-status" class="form-label">الحالة</label>
+                <select class="form-select" id="edit-employee-status" required>
+                  <option value="نشط">نشط</option>
+                  <option value="متوقف">متوقف</option>
+                  <option value="في إجازة">في إجازة</option>
+                </select>
+              </div>
+            </div>
+            <div class="alert alert-danger mt-3 d-none" id="edit-employee-error"></div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+          <button type="button" class="btn btn-primary" id="update-employee-btn">تحديث</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Report Modal -->
+  <div class="modal fade" id="addReportModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">إنشاء تقرير جديد</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="add-report-form">
+            <div class="mb-3">
+              <label for="report-employee" class="form-label">الموظف</label>
+              <select class="form-select" id="report-employee" required>
+                <option value="">اختر الموظف</option>
+                <!-- سيتم ملء هذه القائمة بالبيانات من JavaScript -->
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="report-type" class="form-label">نوع التقرير</label>
+              <select class="form-select" id="report-type" required>
+                <option value="تقرير شهري">تقرير شهري</option>
+                <option value="تقرير سنوي">تقرير سنوي</option>
+                <option value="تقرير أداء">تقرير أداء</option>
+                <option value="تقرير مالي">تقرير مالي</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="report-content" class="form-label">محتوى التقرير</label>
+              <textarea class="form-control" id="report-content" rows="5" required></textarea>
+            </div>
+            <div class="alert alert-danger mt-3 d-none" id="add-report-error"></div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+          <button type="button" class="btn btn-primary" id="save-report-btn">حفظ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Report Modal -->
+  <div class="modal fade" id="viewReportModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="view-report-title">عرض التقرير</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <p><strong>اسم الموظف:</strong> <span id="view-report-employee"></span></p>
+                  <p><strong>نوع التقرير:</strong> <span id="view-report-type"></span></p>
+                </div>
+                <div class="col-md-6">
+                  <p><strong>تاريخ الإرسال:</strong> <span id="view-report-date"></span></p>
+                </div>
+              </div>
+              <hr>
+              <div>
+                <h6>محتوى التقرير:</h6>
+                <p id="view-report-content"></p>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button class="btn btn-outline-primary" id="print-report-btn">
+              <i class="fas fa-print"></i> طباعة
+            </button>
+            <div>
+              <button class="btn btn-success me-2" id="email-report-btn">
+                <i class="fas fa-envelope"></i> إرسال بالبريد
+              </button>
+              <button class="btn btn-success" id="whatsapp-report-btn">
+                <i class="fab fa-whatsapp"></i> إرسال بالواتساب
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">تأكيد الحذف</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p id="delete-confirm-message">هل أنت متأكد من رغبتك في حذف هذا العنصر؟</p>
+          <input type="hidden" id="delete-item-id">
+          <input type="hidden" id="delete-item-type">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+          <button type="button" class="btn btn-danger" id="confirm-delete-btn">حذف</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/employees.js"></script>
+  <script src="js/reports.js"></script>
+  <script src="js/messages.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
